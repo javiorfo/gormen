@@ -2,53 +2,120 @@ package pagination
 
 import (
 	"errors"
+	"reflect"
 
 	"github.com/javiorfo/gormix/pagination/sort"
-	"github.com/javiorfo/gormix/response"
+	"github.com/javiorfo/nilo"
+	"gorm.io/gorm"
 )
 
-type Page struct {
-	Page       int
-	Size       int
-	SortOrders []sort.Order
+type Page[T any] struct {
+	Total    int64
+	Elements []T
 }
 
-func DefaultPage() Page {
-	return Page{
-		Page:       1,
-		Size:       10,
-		SortOrders: []sort.Order{sort.NewOrder("id", sort.Ascending)},
+type Pageable interface {
+	PageNumber() int
+	PageSize() int
+	SortOrders() []sort.Order
+	Paginate(*gorm.DB) (*gorm.DB, error)
+	Filterable
+}
+
+type Filterable interface {
+	AddFilter(any)
+	Filter(*gorm.DB) (*gorm.DB, error)
+}
+
+type pageRequest struct {
+	pageNumber int
+	pageSize   int
+	sortOrders []sort.Order
+	filter     nilo.Option[any]
+}
+
+func (p pageRequest) PageNumber() int {
+	return p.pageNumber
+}
+
+func (p pageRequest) PageSize() int {
+	return p.pageSize
+}
+
+func (p pageRequest) SortOrders() []sort.Order {
+	return p.sortOrders
+}
+
+func (p pageRequest) AddFilter(filter any) {
+	p.filter.Insert(filter)
+}
+
+func (p pageRequest) Paginate(db *gorm.DB) (*gorm.DB, error) {
+	return filterValues(paginate(db, p), p.filter)
+}
+
+func (p pageRequest) Filter(db *gorm.DB) (*gorm.DB, error) {
+	return filterValues(db, p.filter)
+}
+
+func DefaultPageRequest() pageRequest {
+	return pageRequest{
+		pageNumber: 1,
+		pageSize:   10,
+		sortOrders: []sort.Order{sort.Default()},
+		filter:     nilo.None[any](),
 	}
 }
 
-func NewPage[T any](page, size T, sortOrders ...sort.Order) (*Page, error) {
-	pageInt, ok := any(page).(int)
-	if !ok || pageInt < 0 {
-		return nil, errors.New("'page' must be a positive number")
-	}
+type PageOptions func(*pageRequest) error
 
-	sizeInt, ok := any(size).(int)
-	if !ok || sizeInt < 0 {
-		return nil, errors.New("'size' must be a positive number")
-	}
-
-	if sizeInt < pageInt {
-		return nil, errors.New("'size' must be greater than 'page'")
-	}
-
-	for _, order := range sortOrders {
+func WithSortOrder(order sort.Order) PageOptions {
+	return func(p *pageRequest) error {
 		if err := order.IsValid(); err != nil {
+			return err
+		}
+		p.sortOrders = append(p.sortOrders, order)
+		return nil
+	}
+}
+
+func WithFilter(filter any) PageOptions {
+	return func(p *pageRequest) error {
+		if reflect.TypeOf(filter).Kind() != reflect.Struct {
+			return errors.New("'filter' must be a struct")
+		}
+
+		p.filter = nilo.Some(filter)
+		return nil
+	}
+}
+
+func PageRequestFrom[T interface{ ~int | ~string }](pageNumber, pageSize T, options ...PageOptions) (*pageRequest, error) {
+	pageNumberInt, ok := any(pageNumber).(int)
+	if !ok || pageNumberInt < 0 {
+		return nil, errors.New("'pageNumber' must be a positive number")
+	}
+
+	pageSizeInt, ok := any(pageSize).(int)
+	if !ok || pageSizeInt < 1 {
+		return nil, errors.New("'pageSize' must be a positive number greater than 0")
+	}
+
+	if pageSizeInt < pageNumberInt {
+		return nil, errors.New("'pageSize' must be greater than 'pageNumber'")
+	}
+
+	p := &pageRequest{}
+
+	for _, opt := range options {
+		err := opt(p)
+		if err != nil {
 			return nil, err
 		}
 	}
 
-	return &Page{pageInt, sizeInt, sortOrders}, nil
-}
+	p.pageNumber = pageNumberInt
+	p.pageSize = pageSizeInt
 
-func Paginator(p Page, total int64) response.Pagination {
-	return response.Pagination{
-		PageNumber: p.Page,
-		PageSize:   p.Size,
-		Total:      total,
-	}
+	return p, nil
 }

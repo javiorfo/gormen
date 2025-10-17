@@ -2,7 +2,11 @@ module github.com/javiorfo/gormix
 
 go 1.23.4
 
-require gorm.io/gorm v1.30.1
+require (
+	github.com/javiorfo/nilo v1.2.0
+	github.com/javiorfo/steams v1.5.0
+	gorm.io/gorm v1.30.1
+)
 
 require (
 	github.com/jinzhu/inflection v1.0.0 // indirect

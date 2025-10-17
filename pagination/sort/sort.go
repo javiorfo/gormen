@@ -1,6 +1,9 @@
 package sort
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 type Order struct {
 	by        string
@@ -27,6 +30,10 @@ func (o Order) IsValid() error {
 	return nil
 }
 
+func Default() Order {
+	return NewOrder("id", Ascending)
+}
+
 func NewOrder(by string, direction Direction) Order {
 	return Order{by, direction}
 }
@@ -37,3 +44,10 @@ const (
 	Ascending  Direction = "asc"
 	Descending Direction = "desc"
 )
+
+func DirectionFromString(dir string) Direction {
+	if strings.EqualFold(dir, Descending) {
+		return Descending
+	}
+	return Ascending
+}

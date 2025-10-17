@@ -1,2 +1,2 @@
-# gormix
-*Go library for enhancing Gorm (CRUD, Clean Arch, Paging, Sorting and Filtering)*
+# gormen
+*Go library for enhancing Gorm (CRUD, Hexagonal Architecture, Paging, Sorting and Filtering)*
