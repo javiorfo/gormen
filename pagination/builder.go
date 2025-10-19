@@ -15,15 +15,6 @@ type tagAndValue struct {
 	joins      string
 }
 
-func paginate(db *gorm.DB, p pageRequest) *gorm.DB {
-	db = db.Offset(p.pageNumber - 1).Limit(p.pageSize)
-
-	for _, o := range p.sortOrders {
-		db = db.Order(fmt.Sprintf("%s %s", o.By(), o.Direction()))
-	}
-	return db
-}
-
 func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
 	if filter.IsNone() {
 		return db, nil

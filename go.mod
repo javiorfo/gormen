@@ -1,4 +1,4 @@
-module github.com/javiorfo/gormix
+module github.com/javiorfo/gormen
 
 go 1.23.4
 

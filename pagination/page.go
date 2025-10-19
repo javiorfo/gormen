@@ -2,9 +2,10 @@ package pagination
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
-	"github.com/javiorfo/gormix/pagination/sort"
+	"github.com/javiorfo/gormen/pagination/sort"
 	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
@@ -19,6 +20,7 @@ type Pageable interface {
 	PageSize() int
 	SortOrders() []sort.Order
 	Paginate(*gorm.DB) (*gorm.DB, error)
+	Order(*gorm.DB) (*gorm.DB, error)
 	Filterable
 }
 
@@ -51,11 +53,27 @@ func (p pageRequest) AddFilter(filter any) {
 }
 
 func (p pageRequest) Paginate(db *gorm.DB) (*gorm.DB, error) {
-	return filterValues(paginate(db, p), p.filter)
+	return filterValues(p.order(p.paginate(db)), p.filter)
+}
+
+func (p pageRequest) Order(db *gorm.DB) (*gorm.DB, error) {
+	return filterValues(p.order(db), p.filter)
 }
 
 func (p pageRequest) Filter(db *gorm.DB) (*gorm.DB, error) {
 	return filterValues(db, p.filter)
+}
+
+func (p pageRequest) paginate(db *gorm.DB) *gorm.DB {
+	db = db.Offset(p.pageNumber - 1).Limit(p.pageSize)
+	return db
+}
+
+func (p pageRequest) order(db *gorm.DB) *gorm.DB {
+	for _, o := range p.sortOrders {
+		db = db.Order(fmt.Sprintf("%s %s", o.By(), o.Direction()))
+	}
+	return db
 }
 
 func DefaultPageRequest() pageRequest {
