@@ -63,7 +63,8 @@ func DefaultPageRequest() pageRequest {
 
 type PageOptions func(*pageRequest) error
 
-func WithSortOrder(order sort.Order) PageOptions {
+func WithSortOrder(by string, direction sort.Direction) PageOptions {
+	order := sort.NewOrder(by, direction)
 	return func(p *pageRequest) error {
 		if err := order.IsValid(); err != nil {
 			return err

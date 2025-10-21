@@ -3,13 +3,15 @@ package gormen
 import (
 	"fmt"
 
-	"github.com/javiorfo/gormen/internal"
+	"github.com/javiorfo/gormen/internal/types"
 )
 
 type Preload = string
+type Join = string
+type Conditions = map[sqlField]int
 
-type ColumnName string
-type Value any
+type ColumnName = string
+type Value = any
 
 type sqlField struct {
 	name  ColumnName
@@ -28,19 +30,41 @@ func (s sqlField) Value() Value {
 	return s.value
 }
 
-type Where map[sqlField]int
-
-func NewWhere(name ColumnName, value Value) Where {
-	sf := sqlField{name, value}
-	return map[sqlField]int{sf: internal.None}
+type Where struct {
+	conditions Conditions
+	joins      []Join
 }
 
-func (w Where) And(name ColumnName, value Value) {
-	sf := sqlField{name, value}
-	w[sf] = internal.And
+func (w Where) Conditions() Conditions {
+	return w.conditions
 }
 
-func (w Where) Or(name ColumnName, value Value) {
+func (w Where) Joins() []Join {
+	return w.joins
+}
+
+func NewWhere(name ColumnName, value Value) *Where {
 	sf := sqlField{name, value}
-	w[sf] = internal.Or
+	return &Where{conditions: Conditions{sf: types.None}}
+}
+
+func (w *Where) And(name ColumnName, value Value) *Where {
+	sf := sqlField{name, value}
+	w.conditions[sf] = types.And
+	return w
+}
+
+func (w *Where) Or(name ColumnName, value Value) *Where {
+	sf := sqlField{name, value}
+	w.conditions[sf] = types.Or
+	return w
+}
+
+func (w *Where) WithJoin(joins ...string) *Where {
+	w.joins = joins
+	return w
+}
+
+func (w *Where) Build() Where {
+	return *w
 }

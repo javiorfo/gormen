@@ -1,6 +1,7 @@
 package pagination
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -30,12 +31,15 @@ func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
 		value := v.Field(i)
 
 		tagValue := field.Tag.Get("filter")
-		if fmt.Sprintf("%v", value.Interface()) == "" || tagValue == "" {
+		if tagValue == "" {
+			return db, errors.New("'filter' tag must exist in all properties")
+		}
+
+		if fmt.Sprintf("%v", value.Interface()) == "" {
 			continue
 		}
 
 		parts := strings.Split(tagValue, ";")
-		// TODO validate array
 		filterString := parts[0]
 
 		var joins string

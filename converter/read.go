@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/javiorfo/gormen"
-	"github.com/javiorfo/gormen/internal"
+	"github.com/javiorfo/gormen/internal/types"
 	"github.com/javiorfo/gormen/pagination"
 	"github.com/javiorfo/gormen/pagination/sort"
 	"github.com/javiorfo/nilo"
@@ -14,7 +14,7 @@ import (
 )
 
 func (repository *repository[E, C, M]) FindAllPaginated(ctx context.Context, pageable pagination.Pageable, preloads ...gormen.Preload) (*pagination.Page[M], error) {
-	return repository.FindAllPaginatedBy(ctx, pageable, nil, preloads...)
+	return repository.FindAllPaginatedBy(ctx, pageable, gormen.Where{}, preloads...)
 }
 
 func (repository *repository[E, C, M]) FindAllPaginatedBy(ctx context.Context, pageable pagination.Pageable, where gormen.Where, preloads ...gormen.Preload) (*pagination.Page[M], error) {
@@ -33,15 +33,19 @@ func (repository *repository[E, C, M]) FindAllPaginatedBy(ctx context.Context, p
 		query = query.Preload(preload)
 	}
 
+	for _, join := range where.Joins() {
+		query = query.Joins(join)
+	}
+
 	var entities []E
 	page, err := pageable.Paginate(query)
 	if err != nil {
 		return nil, err
 	}
 
-	for k, v := range where {
+	for k, v := range where.Conditions() {
 		switch v {
-		case internal.Or:
+		case types.Or:
 			query = query.Or(k.Prepared(), k.Value())
 		default:
 			query = query.Where(k.Prepared(), k.Value())
@@ -62,8 +66,8 @@ func (repository *repository[E, C, M]) FindAllPaginatedBy(ctx context.Context, p
 	return &pagination.Page[M]{Total: total, Elements: models}, nil
 }
 
-func (repository *repository[E, C, M]) FindAll(ctx context.Context, where gormen.Where, preloads ...gormen.Preload) ([]M, error) {
-	return repository.FindAllBy(ctx, nil, preloads...)
+func (repository *repository[E, C, M]) FindAll(ctx context.Context, preloads ...gormen.Preload) ([]M, error) {
+	return repository.FindAllBy(ctx, gormen.Where{}, preloads...)
 }
 
 func (repository *repository[E, C, M]) FindAllBy(ctx context.Context, where gormen.Where, preloads ...gormen.Preload) ([]M, error) {
@@ -73,9 +77,13 @@ func (repository *repository[E, C, M]) FindAllBy(ctx context.Context, where gorm
 		query = query.Preload(preload)
 	}
 
-	for k, v := range where {
+	for _, join := range where.Joins() {
+		query = query.Joins(join)
+	}
+
+	for k, v := range where.Conditions() {
 		switch v {
-		case internal.Or:
+		case types.Or:
 			query = query.Or(k.Prepared(), k.Value())
 		default:
 			query = query.Where(k.Prepared(), k.Value())
@@ -154,9 +162,13 @@ func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.
 		query = query.Preload(preload)
 	}
 
-	for k, v := range where {
+	for _, join := range where.Joins() {
+		query = query.Joins(join)
+	}
+
+	for k, v := range where.Conditions() {
 		switch v {
-		case internal.Or:
+		case types.Or:
 			query = query.Or(k.Prepared(), k.Value())
 		default:
 			query = query.Where(k.Prepared(), k.Value())
@@ -169,7 +181,7 @@ func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.
 	if err := result.Error; err != nil {
 		none := nilo.None[M]()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = nil
+			return none, nil
 		}
 		return none, err
 	}
@@ -180,15 +192,19 @@ func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.
 }
 
 func (repository repository[E, _, _]) Count(ctx context.Context) (int64, error) {
-	return repository.CountBy(ctx, nil)
+	return repository.CountBy(ctx, gormen.Where{})
 }
 
 func (repository repository[E, _, _]) CountBy(ctx context.Context, where gormen.Where) (int64, error) {
 	query := repository.db.WithContext(ctx)
 
-	for k, v := range where {
+	for _, join := range where.Joins() {
+		query = query.Joins(join)
+	}
+
+	for k, v := range where.Conditions() {
 		switch v {
-		case internal.Or:
+		case types.Or:
 			query = query.Or(k.Prepared(), k.Value())
 		default:
 			query = query.Where(k.Prepared(), k.Value())

@@ -15,6 +15,10 @@ type UserDB struct {
 	Person   PersonDB `gorm:"column:person_id;not null"`
 }
 
+func (udb UserDB) TableName() string {
+	return "users"
+}
+
 func (udb *UserDB) From(u User) {
 	udb.ID = u.ID
 	udb.Username = u.Username
@@ -42,6 +46,10 @@ type PersonDB struct {
 	ID    uint   `gorm:"primaryKey;autoIncrement"`
 	Name  string `gorm:"not null"`
 	Email string `gorm:"not null"`
+}
+
+func (pdb PersonDB) TableName() string {
+	return "persons"
 }
 
 func (pdb *PersonDB) From(p Person) {

@@ -4,26 +4,20 @@ import (
 	"context"
 
 	"github.com/javiorfo/gormen"
-	"github.com/javiorfo/gormen/internal"
+	"github.com/javiorfo/gormen/internal/types"
 	"github.com/javiorfo/steams"
 )
 
-const (
-	create = iota
-	delete
-	save
-)
-
 func (repository *repository[E, C, M]) Create(ctx context.Context, model *M) error {
-	return repository.cud(ctx, model, create)
+	return repository.cud(ctx, model, types.Create)
 }
 
 func (repository *repository[E, C, M]) Save(ctx context.Context, model *M) error {
-	return repository.cud(ctx, model, save)
+	return repository.cud(ctx, model, types.Save)
 }
 
 func (repository *repository[E, C, M]) Delete(ctx context.Context, model *M) error {
-	return repository.cud(ctx, model, delete)
+	return repository.cud(ctx, model, types.Delete)
 }
 
 func (repository *repository[E, C, M]) cud(ctx context.Context, model *M, method int) error {
@@ -33,11 +27,11 @@ func (repository *repository[E, C, M]) cud(ctx context.Context, model *M, method
 	result := repository.db.WithContext(ctx)
 
 	switch method {
-	case save:
+	case types.Save:
 		result = result.Save(&entity)
-	case create:
+	case types.Create:
 		result = result.Create(&entity)
-	case delete:
+	case types.Delete:
 		result = result.Delete(&entity)
 	}
 
@@ -93,9 +87,13 @@ func (repository *repository[E, C, M]) DeleteAll(ctx context.Context, models []M
 func (repository repository[E, _, _]) DeleteAllBy(ctx context.Context, where gormen.Where) error {
 	query := repository.db.WithContext(ctx)
 
-	for k, v := range where {
+	for _, join := range where.Joins() {
+		query = query.Joins(join)
+	}
+
+	for k, v := range where.Conditions() {
 		switch v {
-		case internal.Or:
+		case types.Or:
 			query = query.Or(k.Prepared(), k.Value())
 		default:
 			query = query.Where(k.Prepared(), k.Value())
