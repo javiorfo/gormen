@@ -1,6 +1,6 @@
 package std
 
-import (
+/* import (
 	"context"
 	"errors"
 
@@ -28,4 +28,4 @@ func (repository *stdRepository[M]) FindBy(ctx context.Context, sqlField gormen.
 	}
 
 	return nilo.Some(entity), nil
-}
+} */

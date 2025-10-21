@@ -1,8 +1,11 @@
 package converter
 
-import "gorm.io/gorm"
+import (
+	"github.com/javiorfo/gormen"
+	"gorm.io/gorm"
+)
 
-type converterRepository[E any, C converter[E, M], M any] struct {
+type repository[E any, C converter[E, M], M any] struct {
 	db *gorm.DB
 }
 
@@ -12,6 +15,6 @@ type converter[E, M any] interface {
 	Into() M
 }
 
-func NewConverterRepository[E any, C converter[E, M], M any](db *gorm.DB) *converterRepository[E, C, M] {
-	return &converterRepository[E, C, M]{db}
+func NewRepository[E any, C converter[E, M], M any](db *gorm.DB) gormen.Repository[M] {
+	return &repository[E, C, M]{db}
 }

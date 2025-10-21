@@ -2,6 +2,7 @@ package sort
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -16,6 +17,10 @@ func (o Order) By() string {
 
 func (o Order) Direction() Direction {
 	return o.direction
+}
+
+func (o Order) Prepared() string {
+	return fmt.Sprintf("%s %s", o.By(), o.Direction())
 }
 
 func (o Order) IsValid() error {
