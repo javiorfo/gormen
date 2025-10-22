@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/javiorfo/gormen/internal/utils"
 	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
@@ -49,10 +50,13 @@ func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
 			}
 		}
 
+		fieldValue := value.Interface()
 		results = append(results, tagAndValue{
-			tagValue:   filterString,
-			fieldValue: value.Interface(),
-			joins:      joins,
+			tagValue: filterString,
+			fieldValue: utils.GetValueAsCommaSeparated(fieldValue).MapOrAny(fieldValue, func(s []string) any {
+				return s
+			}),
+			joins: joins,
 		})
 	}
 

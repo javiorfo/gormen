@@ -68,9 +68,9 @@ func (repository repository[M]) DeleteAllBy(ctx context.Context, where gormen.Wh
 	for k, v := range where.Conditions() {
 		switch v {
 		case types.Or:
-			query = query.Or(k.Prepared(), k.Value())
+			query = query.Or(k.Get())
 		default:
-			query = query.Where(k.Prepared(), k.Value())
+			query = query.Where(k.Get())
 		}
 	}
 

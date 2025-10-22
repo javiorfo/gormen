@@ -4,30 +4,58 @@ import (
 	"fmt"
 
 	"github.com/javiorfo/gormen/internal/types"
+	"github.com/javiorfo/gormen/internal/utils"
 )
 
 type Preload = string
 type Join = string
-type Conditions = map[sqlField]int
+type Conditions = map[Condition]int
 
 type ColumnName = string
 type Value = any
 
-type sqlField struct {
+type equal struct {
 	name  ColumnName
 	value Value
 }
 
-func (s sqlField) Prepared() string {
-	return fmt.Sprintf("%s = ?", s.name)
+func Equal(name ColumnName, value Value) equal {
+	return equal{name, value}
 }
 
-func (s sqlField) Name() ColumnName {
-	return s.name
+type like struct {
+	name  ColumnName
+	value Value
 }
 
-func (s sqlField) Value() Value {
-	return s.value
+func (l like) Get() (string, any) {
+	return fmt.Sprintf("%s like ?", l.name), l.value
+}
+
+type in struct {
+	name  ColumnName
+	value Value
+}
+
+func In(name ColumnName, value Value) in {
+	return in{name, value}
+}
+
+func (i in) Get() (string, any) {
+	value := utils.GetValueAsCommaSeparated(i.value).
+		MapOrAny(i.value, func(s []string) any {
+			return s
+		})
+
+	return fmt.Sprintf("%s in ?", i.name), value
+}
+
+type Condition interface {
+	Get() (string, any)
+}
+
+func (e equal) Get() (string, any) {
+	return fmt.Sprintf("%s = ?", e.name), e.value
 }
 
 type Where struct {
@@ -43,20 +71,17 @@ func (w Where) Joins() []Join {
 	return w.joins
 }
 
-func NewWhere(name ColumnName, value Value) *Where {
-	sf := sqlField{name, value}
-	return &Where{conditions: Conditions{sf: types.None}}
+func NewWhere(c Condition) *Where {
+	return &Where{conditions: Conditions{c: types.None}}
 }
 
-func (w *Where) And(name ColumnName, value Value) *Where {
-	sf := sqlField{name, value}
-	w.conditions[sf] = types.And
+func (w *Where) And(c Condition) *Where {
+	w.conditions[c] = types.And
 	return w
 }
 
-func (w *Where) Or(name ColumnName, value Value) *Where {
-	sf := sqlField{name, value}
-	w.conditions[sf] = types.Or
+func (w *Where) Or(c Condition) *Where {
+	w.conditions[c] = types.Or
 	return w
 }
 

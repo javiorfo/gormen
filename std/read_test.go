@@ -1,4 +1,4 @@
-package converter
+package std
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 func TestRead(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("Converter FindBy", func(t *testing.T) {
+	t.Run("Std FindBy", func(t *testing.T) {
 		optional, err := repo.FindBy(ctx, gormen.NewWhere(gormen.Equal("persons.name", "Batch 2")).
 			WithJoin("inner join persons on users.person_id = persons.id").Build(), "Person")
 
@@ -29,7 +29,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter FindBy Not Found", func(t *testing.T) {
+	t.Run("Std FindBy Not Found", func(t *testing.T) {
 		optional, err := repo.FindBy(ctx, gormen.NewWhere(gormen.Equal("username", "notfound")).Build())
 		if err != nil {
 			t.Fatalf("executing find by username %v\n", err)
@@ -40,7 +40,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter FindAll", func(t *testing.T) {
+	t.Run("Std FindAll", func(t *testing.T) {
 		users, err := repo.FindAll(ctx)
 
 		if err != nil {
@@ -52,7 +52,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter FindAllBy", func(t *testing.T) {
+	t.Run("Std FindAllBy", func(t *testing.T) {
 		users, err := repo.FindAllBy(ctx, gormen.NewWhere(gormen.In("password", "123,1234")).Build())
 
 		if err != nil {
@@ -64,7 +64,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter Count", func(t *testing.T) {
+	t.Run("Std Count", func(t *testing.T) {
 		count, err := repo.Count(ctx)
 
 		if err != nil {
@@ -76,7 +76,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter CountBy", func(t *testing.T) {
+	t.Run("Std CountBy", func(t *testing.T) {
 		count, err := repo.CountBy(ctx, gormen.NewWhere(gormen.Equal("password", "123")).Build())
 
 		if err != nil {
@@ -88,7 +88,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter FindAllPaginated default", func(t *testing.T) {
+	t.Run("Std FindAllPaginated default", func(t *testing.T) {
 		pageRequest := pagination.DefaultPageRequest()
 		page, err := repo.FindAllPaginated(ctx, pageRequest, "Person")
 
@@ -101,7 +101,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter FindAllPaginated with page", func(t *testing.T) {
+	t.Run("Std FindAllPaginated with page", func(t *testing.T) {
 		pageRequest, err := pagination.PageRequestFrom(1, 2)
 		if err != nil {
 			t.Fatalf("creating page request %v\n", err)
@@ -121,7 +121,7 @@ func TestRead(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter FindAllPaginated with page, sort and filter", func(t *testing.T) {
+	t.Run("Std FindAllPaginated with page, sort and filter", func(t *testing.T) {
 		type UserFilter struct {
 			Ids string `filter:"persons.id in ?;join:inner join persons on users.person_id = persons.id"`
 		}

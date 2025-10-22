@@ -94,9 +94,9 @@ func (repository repository[E, _, _]) DeleteAllBy(ctx context.Context, where gor
 	for k, v := range where.Conditions() {
 		switch v {
 		case types.Or:
-			query = query.Or(k.Prepared(), k.Value())
+			query = query.Or(k.Get())
 		default:
-			query = query.Where(k.Prepared(), k.Value())
+			query = query.Where(k.Get())
 		}
 	}
 

@@ -46,9 +46,9 @@ func (repository *repository[E, C, M]) FindAllPaginatedBy(ctx context.Context, p
 	for k, v := range where.Conditions() {
 		switch v {
 		case types.Or:
-			query = query.Or(k.Prepared(), k.Value())
+			query = query.Or(k.Get())
 		default:
-			query = query.Where(k.Prepared(), k.Value())
+			query = query.Where(k.Get())
 		}
 	}
 
@@ -84,9 +84,9 @@ func (repository *repository[E, C, M]) FindAllBy(ctx context.Context, where gorm
 	for k, v := range where.Conditions() {
 		switch v {
 		case types.Or:
-			query = query.Or(k.Prepared(), k.Value())
+			query = query.Or(k.Get())
 		default:
-			query = query.Where(k.Prepared(), k.Value())
+			query = query.Where(k.Get())
 		}
 	}
 
@@ -169,9 +169,9 @@ func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.
 	for k, v := range where.Conditions() {
 		switch v {
 		case types.Or:
-			query = query.Or(k.Prepared(), k.Value())
+			query = query.Or(k.Get())
 		default:
-			query = query.Where(k.Prepared(), k.Value())
+			query = query.Where(k.Get())
 		}
 	}
 
@@ -205,9 +205,9 @@ func (repository repository[E, _, _]) CountBy(ctx context.Context, where gormen.
 	for k, v := range where.Conditions() {
 		switch v {
 		case types.Or:
-			query = query.Or(k.Prepared(), k.Value())
+			query = query.Or(k.Get())
 		default:
-			query = query.Where(k.Prepared(), k.Value())
+			query = query.Where(k.Get())
 		}
 	}
 

@@ -1,4 +1,4 @@
-package converter
+package std
 
 import (
 	"context"
@@ -8,47 +8,47 @@ import (
 	"github.com/javiorfo/gormen/internal/testutils"
 )
 
-var repo gormen.Repository[testutils.User]
+var repo gormen.Repository[testutils.UserDB]
 
 func TestMain(m *testing.M) {
-	repo = NewRepository[testutils.UserDB, *testutils.UserDB](testutils.SetupTestDB())
+	repo = NewRepository[testutils.UserDB](testutils.SetupTestDB())
 	m.Run()
 }
 
 func TestCud(t *testing.T) {
 	ctx := context.Background()
 
-	user := testutils.User{
+	user := testutils.UserDB{
 		Username: "batch1",
 		Password: "1234",
-		Person: testutils.Person{
+		Person: testutils.PersonDB{
 			Name:  "Batch 1",
 			Email: "b1@mail.com",
 		},
 	}
-	user2 := testutils.User{
+	user2 := testutils.UserDB{
 		Username: "batch2",
 		Password: "1234",
-		Person: testutils.Person{
+		Person: testutils.PersonDB{
 			Name:  "Batch 2",
 			Email: "b2@mail.com",
 		},
 	}
-	user3 := testutils.User{
+	user3 := testutils.UserDB{
 		Username: "batch3",
 		Password: "1234",
-		Person: testutils.Person{
+		Person: testutils.PersonDB{
 			Name:  "Batch 3",
 			Email: "b3@mail.com",
 		},
 	}
-	users := []testutils.User{user, user2, user3}
+	users := []testutils.UserDB{user, user2, user3}
 
-	t.Run("Converter Create", func(t *testing.T) {
-		user := &testutils.User{
+	t.Run("Std Create", func(t *testing.T) {
+		user := &testutils.UserDB{
 			Username: "jdoe",
 			Password: "1234",
-			Person: testutils.Person{
+			Person: testutils.PersonDB{
 				Name:  "John Doe",
 				Email: "jdoe@mail.com",
 			},
@@ -60,14 +60,14 @@ func TestCud(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter CreateAll", func(t *testing.T) {
+	t.Run("Std CreateAll", func(t *testing.T) {
 		err := repo.CreateAll(ctx, &users, 2)
 		if err != nil || users[0].ID == 0 || users[1].ID == 0 {
 			t.Fatalf("Error creating users %v", err)
 		}
 	})
 
-	t.Run("Converter Save", func(t *testing.T) {
+	t.Run("Std Save", func(t *testing.T) {
 		user := users[0]
 		user.Password = "1111"
 
@@ -77,7 +77,7 @@ func TestCud(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter SaveAll", func(t *testing.T) {
+	t.Run("Std SaveAll", func(t *testing.T) {
 		users[0].Password = "123"
 		users[1].Password = "123"
 
@@ -87,7 +87,7 @@ func TestCud(t *testing.T) {
 		}
 	})
 
-	t.Run("Converter Delete", func(t *testing.T) {
+	t.Run("Std Delete", func(t *testing.T) {
 		err := repo.Delete(ctx, &users[2])
 		if err != nil {
 			t.Fatalf("Error deleting User %v", err)
