@@ -11,12 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// tagAndValue holds a parsed filter tag, its corresponding field value,
+// and any SQL join clauses associated with the filter.
 type tagAndValue struct {
 	tagValue   string
 	fieldValue any
 	joins      string
 }
 
+// filterValues applies filtering conditions from a struct with "filter" tags to a GORM DB query.
+// It takes an optional filter struct wrapped in nilo.Option and returns the modified DB instance.
+// Returns an error if any struct field lacks the "filter" tag.
 func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
 	if filter.IsNone() {
 		return db, nil

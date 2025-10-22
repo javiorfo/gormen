@@ -7,13 +7,14 @@ import (
 	"github.com/javiorfo/gormen"
 	"github.com/javiorfo/gormen/pagination"
 	"github.com/javiorfo/gormen/pagination/sort"
+	"github.com/javiorfo/gormen/where"
 )
 
 func TestRead(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Std FindBy", func(t *testing.T) {
-		optional, err := repo.FindBy(ctx, gormen.NewWhere(gormen.Equal("persons.name", "Batch 2")).
+		optional, err := repo.FindBy(ctx, gormen.NewWhere(where.Equal("persons.name", "Batch 2")).
 			WithJoin("inner join persons on users.person_id = persons.id").Build(), "Person")
 
 		if err != nil {
@@ -30,7 +31,7 @@ func TestRead(t *testing.T) {
 	})
 
 	t.Run("Std FindBy Not Found", func(t *testing.T) {
-		optional, err := repo.FindBy(ctx, gormen.NewWhere(gormen.Equal("username", "notfound")).Build())
+		optional, err := repo.FindBy(ctx, gormen.NewWhere(where.Equal("username", "notfound")).Build())
 		if err != nil {
 			t.Fatalf("executing find by username %v\n", err)
 		}
@@ -53,14 +54,14 @@ func TestRead(t *testing.T) {
 	})
 
 	t.Run("Std FindAllBy", func(t *testing.T) {
-		users, err := repo.FindAllBy(ctx, gormen.NewWhere(gormen.In("password", "123,1234")).Build())
+		users, err := repo.FindAllBy(ctx, gormen.NewWhere(where.Like("username", "batch%")).And(where.In("id", "1,2,3")).Build())
 
 		if err != nil {
 			t.Fatalf("executing find all by %v\n", err)
 		}
 
-		if len(users) != 3 {
-			t.Fatalf("len must be 3, got %d\n", len(users))
+		if len(users) != 2 {
+			t.Fatalf("len must be 2, got %d\n", len(users))
 		}
 	})
 
@@ -77,7 +78,7 @@ func TestRead(t *testing.T) {
 	})
 
 	t.Run("Std CountBy", func(t *testing.T) {
-		count, err := repo.CountBy(ctx, gormen.NewWhere(gormen.Equal("password", "123")).Build())
+		count, err := repo.CountBy(ctx, gormen.NewWhere(where.Equal("password", "123")).Build())
 
 		if err != nil {
 			t.Fatalf("executing count by %v\n", err)
