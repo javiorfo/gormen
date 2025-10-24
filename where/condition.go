@@ -54,7 +54,7 @@ func (i in) Get() (string, any) {
 			return s
 		})
 
-	return fmt.Sprintf("%s in ?", i.name), value
+	return fmt.Sprintf("%s in (?)", i.name), value
 }
 
 // equal represents a SQL equality condition.

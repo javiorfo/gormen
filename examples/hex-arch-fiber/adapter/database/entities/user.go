@@ -35,5 +35,5 @@ func (udb UserDB) Into() model.User {
 
 type UserFilter struct {
 	Username    string `filter:"username = ?"`
-	PersonEmail string `filter:"people.email in ?;join:inner join people on people.id = users.person_id"`
+	PersonEmail string `filter:"people.email in (?);join:inner join people on people.id = users.person_id"`
 }

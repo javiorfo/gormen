@@ -124,7 +124,7 @@ func TestRead(t *testing.T) {
 
 	t.Run("Converter FindAllPaginated with page, sort and filter", func(t *testing.T) {
 		type UserFilter struct {
-			Ids string `filter:"persons.id in ?;join:inner join persons on users.person_id = persons.id"`
+			Ids string `filter:"persons.id in (?);join:inner join persons on users.person_id = persons.id"`
 		}
 
 		pageRequest, err := pagination.PageRequestFrom(1, 1,
