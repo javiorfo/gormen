@@ -21,7 +21,7 @@ func (repository *repository[M]) FindAllPaginated(ctx context.Context, pageable 
 // FindAllPaginatedBy retrieves a paginated list of records of type M filtered by the given Where clause,
 // supports preloading related associations, and returns total count and current page entities.
 func (repository *repository[M]) FindAllPaginatedBy(ctx context.Context, pageable pagination.Pageable, where gormen.Where, preloads ...gormen.Preload) (*pagination.Page[M], error) {
-	total, err := repository.count(ctx, pageable, preloads...)
+	total, err := repository.count(ctx, pageable, where, preloads...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,11 +122,23 @@ func (repository *repository[M]) FindAllOrdered(ctx context.Context, orders []so
 }
 
 // count calculates the total number of records available based on the Pageable filtering and preloads.
-func (repository repository[M]) count(ctx context.Context, pageable pagination.Pageable, preloads ...gormen.Preload) (int64, error) {
+func (repository repository[M]) count(ctx context.Context, pageable pagination.Pageable, where gormen.Where, preloads ...gormen.Preload) (int64, error) {
 	query := repository.db.WithContext(ctx)
 
 	for _, preload := range preloads {
 		query = query.Preload(preload)
+	}
+
+	for _, join := range where.Joins() {
+		query = query.Joins(join)
+	}
+
+	for cond, op := range where.Conditions() {
+		if op == types.Or {
+			query = query.Or(cond.Get())
+		} else {
+			query = query.Where(cond.Get())
+		}
 	}
 
 	query = query.Model(*new(M))
