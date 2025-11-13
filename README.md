@@ -81,7 +81,7 @@ func main() {
 }
 ```
 
-## Example Coverter Repository (Hexagonal Arch)
+## Example Converter Repository (Hexagonal Arch)
 #### More examples [here](https://github.com/javiorfo/gormen/tree/master/examples)
 ```go
 // Converter data must satisfies converter interface
