@@ -14,30 +14,30 @@ func TestRead(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Converter FindBy", func(t *testing.T) {
-		optional, err := repo.FindBy(ctx, gormen.NewWhere(where.Equal("persons.name", "Batch 2")).
+		value, err := repo.FindBy(ctx, gormen.NewWhere(where.Equal("persons.name", "Batch 2")).
 			WithJoin("inner join persons on users.person_id = persons.id").Build(), "Person")
 
 		if err != nil {
 			t.Fatalf("executing find by username %v\n", err)
 		}
 
-		if optional.IsNone() {
+		if value == nil {
 			t.Fatal("user not found")
 		}
 
-		if optional.Unwrap().Password != "123" {
+		if value.Password != "123" {
 			t.Fatal("user found does not match")
 		}
 	})
 
 	t.Run("Converter FindBy Not Found", func(t *testing.T) {
-		optional, err := repo.FindBy(ctx, gormen.NewWhere(where.Equal("username", "notfound")).Build())
+		value, err := repo.FindBy(ctx, gormen.NewWhere(where.Equal("username", "notfound")).Build())
 		if err != nil {
 			t.Fatalf("executing find by username %v\n", err)
 		}
 
-		if optional.IsSome() {
-			t.Fatal("user must be None")
+		if value != nil {
+			t.Fatal("user must be nil")
 		}
 	})
 

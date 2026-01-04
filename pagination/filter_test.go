@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/javiorfo/gormen/internal/testutils"
-	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
 
@@ -22,8 +21,7 @@ type testFilter struct {
 }
 
 func TestFilterValues_None(t *testing.T) {
-	filterOpt := nilo.None[any]()
-	gotDB, err := filterValues(db, filterOpt)
+	gotDB, err := filterValues(db, nil)
 	if err != nil {
 		t.Fatalf("expected no error but got %v", err)
 	}
@@ -34,7 +32,7 @@ func TestFilterValues_None(t *testing.T) {
 }
 
 func TestFilterValues_EmptyFields(t *testing.T) {
-	filterOpt := nilo.Some(any(testFilter{Name: "", IDs: nil}))
+	filterOpt := any(testFilter{Name: "", IDs: nil})
 	gotDB, err := filterValues(db, filterOpt)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -46,7 +44,7 @@ func TestFilterValues_EmptyFields(t *testing.T) {
 }
 
 func TestFilterValues_FilterWithJoins(t *testing.T) {
-	filterOpt := nilo.Some(any(testFilter{Name: "alice", IDs: []int{1, 2, 3}}))
+	filterOpt := any(testFilter{Name: "alice", IDs: []int{1, 2, 3}})
 	gotDB, err := filterValues(db, filterOpt)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

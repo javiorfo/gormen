@@ -14,8 +14,8 @@ github.com/google/pprof v0.0.0-20221118152302-e6195bd50e26 h1:Xim43kblpZXfIBQsbu
 github.com/google/pprof v0.0.0-20221118152302-e6195bd50e26/go.mod h1:dDKJzRmX4S37WGHujM7tX//fmj1uioxKzKxz3lo4HJo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/javiorfo/nilo v1.2.0 h1:LZCZyeiUomrD01ECPd+PsOp9WF8gLLRpX/pPn1txF9I=
-github.com/javiorfo/nilo v1.2.0/go.mod h1:cJBBOCqyc+87XmxDyJrenoIfhUkjsb07RRyNZOMJe90=
+github.com/javiorfo/nilo v1.1.0 h1:wKRUNuPujZKPC8j+YfldAO1hw5HSO0hFnkMaJkC/hAg=
+github.com/javiorfo/nilo v1.1.0/go.mod h1:cJBBOCqyc+87XmxDyJrenoIfhUkjsb07RRyNZOMJe90=
 github.com/javiorfo/steams v1.5.0 h1:TfWx0yMqr8oPQxIyqEym1Qu8+6pXyo5Z4pSg+1cdP7I=
 github.com/javiorfo/steams v1.5.0/go.mod h1:Pg5i6X1459CyUir9E2eYeLlc3uJtKWTcyiaomEFqLYE=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=

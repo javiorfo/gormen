@@ -5,7 +5,6 @@ import (
 
 	"github.com/javiorfo/gormen/pagination"
 	"github.com/javiorfo/gormen/pagination/sort"
-	"github.com/javiorfo/nilo"
 )
 
 // Repository defines a generic interface combining CUD (Create, Update, Delete)
@@ -39,8 +38,8 @@ type ReadRepository[M any] interface {
 	Count(ctx context.Context) (int64, error)
 	// CountBy returns the number of records matching a specific condition.
 	CountBy(ctx context.Context, where Where) (int64, error)
-	// FindBy returns a single record matching the condition or none if not found.
-	FindBy(ctx context.Context, where Where, preloads ...Preload) (nilo.Option[M], error)
+	// FindBy returns a single record matching the condition or nil if not found.
+	FindBy(ctx context.Context, where Where, preloads ...Preload) (*M, error)
 	// FindAll returns all records.
 	FindAll(ctx context.Context, preloads ...Preload) ([]M, error)
 	// FindAllBy returns all records matching a condition.

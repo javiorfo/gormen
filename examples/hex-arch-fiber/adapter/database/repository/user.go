@@ -10,7 +10,6 @@ import (
 	"github.com/javiorfo/gormen/converter"
 	"github.com/javiorfo/gormen/pagination"
 	"github.com/javiorfo/gormen/where"
-	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
 
@@ -30,6 +29,6 @@ func (u *userRepo) FindAll(ctx context.Context, pageable pagination.Pageable) (*
 	return u.gr.FindAllPaginatedBy(ctx, pageable, gormen.NewWhere(where.Equal("enable", true)).Build(), "Person")
 }
 
-func (u *userRepo) FindByUsername(ctx context.Context, username string) (nilo.Option[model.User], error) {
+func (u *userRepo) FindByUsername(ctx context.Context, username string) (*model.User, error) {
 	return u.gr.FindBy(ctx, gormen.NewWhere(where.Equal("username", username)).Build(), "Person")
 }

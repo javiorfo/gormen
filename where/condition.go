@@ -49,12 +49,12 @@ func In(name ColumnName, value Value) in {
 // Get returns the SQL IN query snippet and the processed list of values.
 // Satisfies Condition interface
 func (i in) Get() (string, any) {
-	value := utils.GetValueAsCommaSeparated(i.value).
-		MapOrAny(i.value, func(s []string) any {
-			return s
-		})
-
-	return fmt.Sprintf("%s in (?)", i.name), value
+	v := i.value
+	values := utils.GetValueAsCommaSeparated(v)
+	if len(values) > 0 {
+		v = values
+	}
+	return fmt.Sprintf("%s in (?)", i.name), v
 }
 
 // equal represents a SQL equality condition.

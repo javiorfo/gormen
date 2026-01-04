@@ -10,7 +10,6 @@ import (
 	"github.com/javiorfo/gormen/pagination"
 	"github.com/javiorfo/gormen/pagination/sort"
 	"github.com/javiorfo/gormen/where"
-	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
 
@@ -28,7 +27,7 @@ func (u *userRepo) FindAll(ctx context.Context, pageable pagination.Pageable) (*
 	return u.FindAllPaginatedBy(ctx, pageable, gormen.NewWhere(where.Equal("enable", true)).Build())
 }
 
-func (u *userRepo) FindByUsername(ctx context.Context, username string) (nilo.Option[User], error) {
+func (u *userRepo) FindByUsername(ctx context.Context, username string) (*User, error) {
 	return u.FindBy(ctx, gormen.NewWhere(where.Equal("username", username)).Build())
 }
 
@@ -59,10 +58,8 @@ func main() {
 		log.Fatalf("Error creating users %v", err)
 	}
 
-	opt, _ := repo.FindByUsername(ctx, "batch1")
-	opt.Inspect(func(ud User) {
-		log.Printf("%+v", ud)
-	})
+	user, _ := repo.FindByUsername(ctx, "batch1")
+	log.Printf("%+v", user)
 
 	pageRequest, _ := pagination.PageRequestFrom(1, 10, pagination.WithSortOrder("username", sort.Descending))
 	page, err := repo.FindAll(ctx, pageRequest)

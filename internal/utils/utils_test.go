@@ -1,25 +1,21 @@
 package utils
 
-import (
-	"testing"
+import "testing"
 
-	"github.com/javiorfo/nilo"
-)
-
-func assertOptionStringSliceEqual(t *testing.T, expected, actual nilo.Option[[]string]) {
+func assertOptionStringSliceEqual(t *testing.T, expected, actual []string) {
 	t.Helper()
 
-	expectedHas := expected.IsSome()
-	actualHas := actual.IsSome()
+	expectedHas := len(expected) > 0
+	actualHas := len(expected) > 0
 
 	if expectedHas != actualHas {
-		t.Errorf("Option mismatch: Expected IsSome() to be %v, got %v", expectedHas, actualHas)
+		t.Errorf("Option mismatch: Expected some to be %v, got %v", expectedHas, actualHas)
 		return
 	}
 
 	if expectedHas {
-		expectedVal := expected.Unwrap()
-		actualVal := actual.Unwrap()
+		expectedVal := expected
+		actualVal := actual
 
 		if len(expectedVal) != len(actualVal) {
 			t.Errorf("Slice length mismatch: Expected %d elements, got %d", len(expectedVal), len(actualVal))
@@ -43,52 +39,52 @@ func TestGetValueAsCommaSeparated(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    any
-		expected nilo.Option[[]string]
+		expected []string
 	}{
 		{
 			name:     "Valid comma-separated string",
 			input:    "apple,banana,cherry",
-			expected: nilo.Some([]string{"apple", "banana", "cherry"}),
+			expected: []string{"apple", "banana", "cherry"},
 		},
 		{
 			name:     "String with leading/trailing spaces around commas (will include spaces in results)",
 			input:    "one, two ,three ",
-			expected: nilo.Some([]string{"one", " two ", "three "}),
+			expected: []string{"one", " two ", "three "},
 		},
 		{
 			name:     "Empty string",
 			input:    "",
-			expected: nilo.None[[]string](),
+			expected: []string{},
 		},
 		{
 			name:     "String without a comma",
 			input:    "singleword",
-			expected: nilo.None[[]string](),
+			expected: []string{},
 		},
 		{
 			name:     "String containing only a comma",
 			input:    ",",
-			expected: nilo.Some([]string{"", ""}), // strings.Split(",") results in ["", ""]
+			expected: []string{"", ""}, // strings.Split(",") results in ["", ""]
 		},
 		{
 			name:     "String with multiple consecutive commas",
 			input:    "a,,b",
-			expected: nilo.Some([]string{"a", "", "b"}),
+			expected: []string{"a", "", "b"},
 		},
 		{
 			name:     "Non-string input (int)",
 			input:    12345,
-			expected: nilo.None[[]string](),
+			expected: []string{},
 		},
 		{
 			name:     "Non-string input (struct)",
 			input:    CustomStruct{Name: "Test"},
-			expected: nilo.None[[]string](),
+			expected: []string{},
 		},
 		{
 			name:     "Nil input",
 			input:    nil,
-			expected: nilo.None[[]string](),
+			expected: []string{},
 		},
 	}
 

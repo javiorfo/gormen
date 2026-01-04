@@ -8,7 +8,6 @@ import (
 	"github.com/javiorfo/gormen/internal/types"
 	"github.com/javiorfo/gormen/pagination"
 	"github.com/javiorfo/gormen/pagination/sort"
-	"github.com/javiorfo/nilo"
 	"github.com/javiorfo/steams"
 	"gorm.io/gorm"
 )
@@ -162,8 +161,8 @@ func (repository repository[E, _, _]) count(ctx context.Context, pageable pagina
 }
 
 // FindBy retrieves the first record matching the Where conditions with preloads,
-// returns an Option of model M — None if not found.
-func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.Where, preloads ...gormen.Preload) (nilo.Option[M], error) {
+// returns a of model M — Nil if not found.
+func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.Where, preloads ...gormen.Preload) (*M, error) {
 	query := repository.db.WithContext(ctx)
 	for _, preload := range preloads {
 		query = query.Preload(preload)
@@ -182,15 +181,14 @@ func (repository *repository[E, C, M]) FindBy(ctx context.Context, where gormen.
 	var entity C = new(E)
 	result := query.First(&entity)
 	if err := result.Error; err != nil {
-		none := nilo.None[M]()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return none, nil
+			return nil, nil
 		}
-		return none, err
+		return nil, err
 	}
 
 	model := entity.Into()
-	return nilo.Some(model), nil
+	return &model, nil
 }
 
 // Count returns the total number of records without filters.

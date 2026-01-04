@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/javiorfo/gormen/pagination/sort"
-	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +18,7 @@ type pageRequest struct {
 	// List of sorting criteria for query results.
 	sortOrders []sort.Order
 	// Optional filter criteria to narrow results.
-	filter nilo.Option[any]
+	filter any
 }
 
 // PageNumber returns the current page number.
@@ -71,7 +70,7 @@ func DefaultPageRequest() *pageRequest {
 		pageNumber: 1,
 		pageSize:   10,
 		sortOrders: []sort.Order{sort.Default()},
-		filter:     nilo.None[any](),
+		filter:     nil,
 	}
 }
 
@@ -96,7 +95,7 @@ func WithFilter(filter any) PageOptions {
 		if reflect.TypeOf(filter).Kind() != reflect.Struct {
 			return errors.New("'filter' must be a struct")
 		}
-		p.filter = nilo.Some(filter)
+		p.filter = filter
 		return nil
 	}
 }
@@ -117,7 +116,7 @@ func PageRequestFrom[T interface{ ~int | ~string }](pageNumber, pageSize T, opti
 		return nil, errors.New("'pageSize' must be greater than 'pageNumber'")
 	}
 
-	p := &pageRequest{}
+	p := &pageRequest{filter: nil}
 
 	for _, opt := range options {
 		err := opt(p)

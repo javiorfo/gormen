@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/javiorfo/gormen/internal/utils"
-	"github.com/javiorfo/nilo"
 	"gorm.io/gorm"
 )
 
@@ -20,16 +19,16 @@ type tagAndValue struct {
 }
 
 // filterValues applies filtering conditions from a struct with "filter" tags to a GORM DB query.
-// It takes an optional filter struct wrapped in nilo.Option and returns the modified DB instance.
+// It takes an filter struct and returns the modified DB instance.
 // Returns an error if any struct field lacks the "filter" tag.
-func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
-	if filter.IsNone() {
+func filterValues(db *gorm.DB, filter any) (*gorm.DB, error) {
+	if filter == nil {
 		return db, nil
 	}
 
 	var results []tagAndValue
 
-	v := reflect.ValueOf(filter.Unwrap())
+	v := reflect.ValueOf(filter)
 	t := v.Type()
 
 	for i := range t.NumField() {
@@ -56,12 +55,15 @@ func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
 		}
 
 		fieldValue := value.Interface()
+		values := utils.GetValueAsCommaSeparated(fieldValue)
+		if len(values) > 0 {
+			fieldValue = values
+		}
+
 		results = append(results, tagAndValue{
-			tagValue: filterString,
-			fieldValue: utils.GetValueAsCommaSeparated(fieldValue).MapOrAny(fieldValue, func(s []string) any {
-				return s
-			}),
-			joins: joins,
+			tagValue:   filterString,
+			fieldValue: fieldValue,
+			joins:      joins,
 		})
 	}
 

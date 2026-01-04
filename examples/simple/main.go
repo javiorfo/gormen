@@ -63,10 +63,8 @@ func main() {
 		log.Fatalf("Error creating users %v", err)
 	}
 
-	opt, _ := repo.FindBy(ctx, gormen.NewWhere(where.Like("username", "%do%")).Build(), "Person")
-	opt.Inspect(func(ud UserDB) {
-		log.Printf("%+v", ud)
-	})
+	user, _ = repo.FindBy(ctx, gormen.NewWhere(where.Like("username", "%do%")).Build(), "Person")
+	log.Printf("%+v", user)
 
 	orders := []sort.Order{sort.NewOrder("username", sort.Descending)}
 	users, err = repo.FindAllOrdered(ctx, orders, "Person")

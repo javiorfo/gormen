@@ -22,14 +22,14 @@ func (u *userService) FindAll(ctx context.Context, pageable pagination.Pageable)
 }
 
 func (u *userService) FindByUsername(ctx context.Context, username string) (*model.User, error) {
-	userOpt, err := u.userRepo.FindByUsername(ctx, username)
+	user, err := u.userRepo.FindByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}
 
-	if userOpt.IsNone() {
+	if user == nil {
 		return nil, errors.New("user not found")
 	}
 
-	return userOpt.UnwrapUnchecked(), nil
+	return user, nil
 }
