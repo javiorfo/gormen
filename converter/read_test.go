@@ -21,11 +21,11 @@ func TestRead(t *testing.T) {
 			t.Fatalf("executing find by username %v\n", err)
 		}
 
-		if optional.IsNone() {
+		if optional.IsNil() {
 			t.Fatal("user not found")
 		}
 
-		if optional.Unwrap().Password != "123" {
+		if optional.AsValue().Password != "123" {
 			t.Fatal("user found does not match")
 		}
 	})
@@ -36,8 +36,8 @@ func TestRead(t *testing.T) {
 			t.Fatalf("executing find by username %v\n", err)
 		}
 
-		if optional.IsSome() {
-			t.Fatal("user must be None")
+		if optional.IsValue() {
+			t.Fatal("user must be Nil")
 		}
 	})
 

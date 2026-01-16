@@ -27,9 +27,9 @@ func (u *userService) FindByUsername(ctx context.Context, username string) (*mod
 		return nil, err
 	}
 
-	if userOpt.IsNone() {
+	if userOpt.IsNil() {
 		return nil, errors.New("user not found")
 	}
 
-	return userOpt.UnwrapUnchecked(), nil
+	return userOpt.AsPtr(), nil
 }

@@ -21,8 +21,8 @@ type testFilter struct {
 	Empty string `filter:"empty = ?"`
 }
 
-func TestFilterValues_None(t *testing.T) {
-	filterOpt := nilo.None[any]()
+func TestFilterValues_Nil(t *testing.T) {
+	filterOpt := nilo.Nil[any]()
 	gotDB, err := filterValues(db, filterOpt)
 	if err != nil {
 		t.Fatalf("expected no error but got %v", err)
@@ -34,7 +34,7 @@ func TestFilterValues_None(t *testing.T) {
 }
 
 func TestFilterValues_EmptyFields(t *testing.T) {
-	filterOpt := nilo.Some(any(testFilter{Name: "", IDs: nil}))
+	filterOpt := nilo.Value(any(testFilter{Name: "", IDs: nil}))
 	gotDB, err := filterValues(db, filterOpt)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -46,7 +46,7 @@ func TestFilterValues_EmptyFields(t *testing.T) {
 }
 
 func TestFilterValues_FilterWithJoins(t *testing.T) {
-	filterOpt := nilo.Some(any(testFilter{Name: "alice", IDs: []int{1, 2, 3}}))
+	filterOpt := nilo.Value(any(testFilter{Name: "alice", IDs: []int{1, 2, 3}}))
 	gotDB, err := filterValues(db, filterOpt)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

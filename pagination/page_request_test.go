@@ -34,7 +34,7 @@ func TestWithFilter_ValidAndInvalid(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error for valid filter struct: %v", err)
 	}
-	if p.filter.IsNone() {
+	if p.filter.IsNil() {
 		t.Error("expected filter option to be set")
 	}
 

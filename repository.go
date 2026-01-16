@@ -39,7 +39,7 @@ type ReadRepository[M any] interface {
 	Count(ctx context.Context) (int64, error)
 	// CountBy returns the number of records matching a specific condition.
 	CountBy(ctx context.Context, where Where) (int64, error)
-	// FindBy returns a single record matching the condition or none if not found.
+	// FindBy returns a single record matching the condition or Nil if not found.
 	FindBy(ctx context.Context, where Where, preloads ...Preload) (nilo.Option[M], error)
 	// FindAll returns all records.
 	FindAll(ctx context.Context, preloads ...Preload) ([]M, error)

@@ -71,7 +71,7 @@ func DefaultPageRequest() *pageRequest {
 		pageNumber: 1,
 		pageSize:   10,
 		sortOrders: []sort.Order{sort.Default()},
-		filter:     nilo.None[any](),
+		filter:     nilo.Nil[any](),
 	}
 }
 
@@ -96,7 +96,7 @@ func WithFilter(filter any) PageOptions {
 		if reflect.TypeOf(filter).Kind() != reflect.Struct {
 			return errors.New("'filter' must be a struct")
 		}
-		p.filter = nilo.Some(filter)
+		p.filter = nilo.Value(filter)
 		return nil
 	}
 }

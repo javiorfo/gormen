@@ -23,13 +23,13 @@ type tagAndValue struct {
 // It takes an optional filter struct wrapped in nilo.Option and returns the modified DB instance.
 // Returns an error if any struct field lacks the "filter" tag.
 func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
-	if filter.IsNone() {
+	if filter.IsNil() {
 		return db, nil
 	}
 
 	var results []tagAndValue
 
-	v := reflect.ValueOf(filter.Unwrap())
+	v := reflect.ValueOf(filter.AsValue())
 	t := v.Type()
 
 	for i := range t.NumField() {
@@ -56,12 +56,13 @@ func filterValues(db *gorm.DB, filter nilo.Option[any]) (*gorm.DB, error) {
 		}
 
 		fieldValue := value.Interface()
+		utils.GetValueAsCommaSeparated(fieldValue).Consume(func(s []string) {
+			fieldValue = s
+		})
 		results = append(results, tagAndValue{
-			tagValue: filterString,
-			fieldValue: utils.GetValueAsCommaSeparated(fieldValue).MapOrAny(fieldValue, func(s []string) any {
-				return s
-			}),
-			joins: joins,
+			tagValue:   filterString,
+			fieldValue: fieldValue,
+			joins:      joins,
 		})
 	}
 

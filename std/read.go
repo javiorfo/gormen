@@ -158,7 +158,7 @@ func (repository repository[M]) count(ctx context.Context, pageable pagination.P
 }
 
 // FindBy fetches the first record of type M matching the Where clause with preloads,
-// returns an optional value with the record if found, otherwise None.
+// returns an optional value with the record if found, otherwise Nil.
 func (repository *repository[M]) FindBy(ctx context.Context, where gormen.Where, preloads ...gormen.Preload) (nilo.Option[M], error) {
 	query := repository.db.WithContext(ctx)
 
@@ -182,14 +182,14 @@ func (repository *repository[M]) FindBy(ctx context.Context, where gormen.Where,
 	var entity M
 	result := query.First(&entity)
 	if err := result.Error; err != nil {
-		none := nilo.None[M]()
+		none := nilo.Nil[M]()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return none, nil
 		}
 		return none, err
 	}
 
-	return nilo.Some(entity), nil
+	return nilo.Value(entity), nil
 }
 
 // Count returns the total number of records without filters.

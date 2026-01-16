@@ -6,7 +6,7 @@ require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/gofiber/fiber/v2 v2.52.9
 	github.com/javiorfo/gormen v0.0.0-unpublished
-	github.com/javiorfo/nilo v1.2.0
+	github.com/javiorfo/nilo v1.4.0
 	gorm.io/gorm v1.30.1
 )
 
@@ -17,7 +17,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/glebarez/go-sqlite v1.21.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/javiorfo/steams v1.5.0 // indirect
+	github.com/javiorfo/steams v1.6.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect

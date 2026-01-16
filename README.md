@@ -68,7 +68,7 @@ func main() {
   }
 
   opt, _ := repo.FindBy(ctx, gormen.NewWhere(where.Like("username", "2%")).Build(), "Person")
-  opt.Inspect(func(ud UserDB) {
+  opt.Consume(func(ud UserDB) {
     log.Printf("%+v", ud)
   })
 

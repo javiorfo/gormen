@@ -4,8 +4,8 @@ go 1.23.4
 
 require (
 	github.com/glebarez/sqlite v1.11.0
-	github.com/javiorfo/nilo v1.2.0
-	github.com/javiorfo/steams v1.5.0
+	github.com/javiorfo/nilo v1.4.0
+	github.com/javiorfo/steams v1.6.0
 	gorm.io/gorm v1.30.1
 )
 
